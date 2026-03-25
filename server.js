@@ -29,24 +29,38 @@ function normalizeTitle(title) {
 function splitSlides(blocks) {
   const slides = [];
   let current = [];
+  let previousWasDivider = false;
+  let nextSlideLayout = "default";
+
+  function pushCurrentSlide() {
+    if (current.length === 0) return;
+    if (nextSlideLayout === "cover") {
+      slides.push({ layout: "cover", blocks: current });
+    } else {
+      slides.push(current);
+    }
+    current = [];
+    nextSlideLayout = "default";
+  }
 
   for (const block of blocks) {
     if (!block) continue;
 
     if (block.type === "divider") {
-      if (current.length > 0) {
-        slides.push(current);
+      if (previousWasDivider) {
+        nextSlideLayout = "cover";
+      } else if (current.length > 0) {
+        pushCurrentSlide();
       }
-      current = [];
+      previousWasDivider = true;
       continue;
     }
 
+    previousWasDivider = false;
     current.push(block);
   }
 
-  if (current.length > 0) {
-    slides.push(current);
-  }
+  pushCurrentSlide();
 
   return slides;
 }
@@ -149,8 +163,12 @@ async function extractBlocks(page) {
       "display", "flex-direction", "justify-content", "align-items", "gap", "align-self",
       "color", "background-color", "font-size", "font-style", "font-weight", "font-family", "line-height",
       "letter-spacing", "text-align", "text-decoration-line", "text-decoration-color", "text-transform",
-      "white-space", "list-style-type", "padding", "padding-top", "padding-right", "padding-bottom", "padding-left",
+      "white-space", "list-style-type",
+      "padding", "padding-top", "padding-right", "padding-bottom", "padding-left",
+      "padding-inline", "padding-inline-start", "padding-inline-end",
       "margin", "margin-top", "margin-right", "margin-bottom", "margin-left",
+      "margin-inline", "margin-inline-start", "margin-inline-end",
+      "inset-inline-start", "inset-inline-end",
       "border", "border-top", "border-right", "border-bottom", "border-left", "border-radius",
       "width", "max-width", "min-width", "height", "max-height", "min-height", "opacity",
       "border-collapse", "border-spacing", "table-layout", "vertical-align"
@@ -180,8 +198,8 @@ async function extractBlocks(page) {
       const parentBlock = node.parentElement ? node.parentElement.closest("[data-block-id]") : null;
       return !parentBlock || !root.contains(parentBlock) || parentBlock === node;
     });
-
-    const orderedBlocks = topLevelBlocks.length > 0 ? topLevelBlocks : Array.from(root.children);
+    const directRootChildren = Array.from(root.children || []).filter((node) => node && node.nodeType === Node.ELEMENT_NODE);
+    const orderedBlocks = directRootChildren.length > 0 ? directRootChildren : topLevelBlocks;
 
     function getText(node) {
       return cleanText(node ? node.innerText || node.textContent || "" : "");
@@ -217,6 +235,18 @@ async function extractBlocks(page) {
       return Array.from(node.children || []).find((child) => child.querySelector(selector) || child.matches(selector)) || null;
     }
 
+    function isCalloutBlock(node) {
+      try {
+        if (!node) return false;
+        if ((node.getAttribute("data-block-type") || "").toLowerCase().includes("callout")) return true;
+        if ((node.dataset.blockType || "").toLowerCase().includes("callout")) return true;
+        const className = String(node.className || "");
+        return /callout/i.test(className);
+      } catch (error) {
+        return false;
+      }
+    }
+
     function isToggleBlock(node) {
       try {
         if (!node) return false;
@@ -224,6 +254,7 @@ async function extractBlocks(page) {
         if ((node.dataset.blockType || "").toLowerCase().includes("toggle")) return true;
         const className = String(node.className || "");
         if (/toggle/i.test(className)) return true;
+        if (isCalloutBlock(node)) return false;
         return Boolean(findDirectChildContaining(node, '[aria-expanded]'));
       } catch (error) {
         return false;
@@ -335,6 +366,9 @@ async function extractBlocks(page) {
       for (const element of wrapper.querySelectorAll("*")) {
         const tagName = element.tagName.toLowerCase();
         const containsTable = Boolean(element.querySelector("table"));
+        const containsDirectTable = Array.from(element.children || []).some((child) => {
+          return child.tagName && child.tagName.toLowerCase() === "table";
+        });
 
         if (tableTags.has(tagName)) {
           element.style.removeProperty("width");
@@ -345,7 +379,7 @@ async function extractBlocks(page) {
           element.style.removeProperty("min-height");
         }
 
-        if (containsTable) {
+        if (containsDirectTable) {
           element.style.removeProperty("display");
           element.style.removeProperty("justify-content");
           element.style.removeProperty("align-items");
@@ -435,6 +469,8 @@ async function extractBlocks(page) {
         if (!node) return null;
         if (isDivider(node)) return { type: "divider" };
 
+        const callout = isCalloutBlock(node);
+        const toggle = isToggleBlock(node);
         let html = (isToggleBlock(node) ? serializeToggleNode(node) : serializeNode(node)).trim();
         html = normalizeTableHtml(html);
         const text = getText(node);
@@ -451,11 +487,12 @@ async function extractBlocks(page) {
           };
         }
 
-        if (html && (text || node.querySelector("img, ul, ol, pre, blockquote"))) {
+        if (html && (text || callout || toggle || node.querySelector("img, ul, ol, pre, blockquote, [aria-expanded]"))) {
           return {
             type: "html",
             text,
-            html
+            html,
+            isCallout: callout
           };
         }
 

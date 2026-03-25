@@ -76,74 +76,195 @@ button {
   background: transparent;
 }
 
-.toolbar {
-  position: absolute;
-  top: 14px;
-  right: 14px;
+.toolbar-shell {
+  position: fixed;
+  top: 50%;
+  left: 50%;
   z-index: 100;
-  display: flex;
-  gap: 8px;
-  align-items: center;
-  width: min(480px, calc(100vw - 28px));
-  padding: 8px;
-  border: 1px solid var(--border);
-  border-radius: 14px;
-  background: var(--surface);
-  box-shadow: var(--surface-shadow);
-  backdrop-filter: blur(12px);
 }
 
-.toolbar.is-hidden {
-  opacity: 0;
-  pointer-events: none;
-  transform: translateY(-8px);
+.toolbar {
+  display: grid;
+  gap: 10px;
+  width: min(272px, calc(100vw - 36px));
+  padding: 12px;
+  border: 1px solid #f2efef;
+  border-radius: 16px;
+  background: #ffffff;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.06);
+}
+
+.toolbar__header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.toolbar__title-group {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+}
+
+.toolbar__top-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.toolbar__title {
+  margin: 0;
+  overflow: hidden;
+  color: #1e1e26;
+  font-size: 13px;
+  font-weight: 600;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.toolbar__meta {
+  margin: 0;
+  color: #8a8a8a;
+  font-size: 10px;
+  font-weight: 400;
+  line-height: normal;
+}
+
+.toolbar__icon-button {
+  display: inline-flex;
+  align-items: center;
+  position: relative;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border: 0;
+  border-radius: 7.111px;
+  background: transparent;
+  color: #8a8a8a;
+}
+
+.toolbar__icon-button img {
+  width: 27px;
+  height: 27px;
+  display: block;
+}
+
+.toolbar__icon-button.is-active::after {
+  content: "";
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #009cff;
+}
+
+.toolbar__export-button {
+  height: 32px;
+  padding: 0 10px;
+  border: 0;
+  border-radius: 5px;
+  background: #009cff;
+  color: #ffffff;
+  font-size: 12px;
+  font-weight: 400;
+}
+
+.toolbar__label {
+  color: #1e1e26;
+  font-size: 10px;
+  font-weight: 400;
+  line-height: normal;
+}
+
+.toolbar__field {
+  display: grid;
+  gap: 4px;
 }
 
 .toolbar__input {
   min-width: 0;
-  flex: 1 1 auto;
-  height: 36px;
-  padding: 0 12px;
-  border: 1px solid var(--border);
-  border-radius: 10px;
+  width: 100%;
+  height: 29px;
+  padding: 0 10px;
+  border: 1.5px solid transparent;
+  border-radius: 3px;
   outline: none;
-  background: #ffffff;
-  color: var(--text);
-  font-size: 13px;
+  background: #f5f5f5;
+  color: #1e1e26;
+  font-size: 12px;
 }
 
-.toolbar__button {
-  flex: 0 0 auto;
-  height: 36px;
-  padding: 0 12px;
-  border: 1px solid var(--border);
-  border-radius: 10px;
-  background: #f8f8f8;
-  color: var(--text);
-  font-size: 13px;
+.toolbar__input:focus {
+  border-color: #7fbfff;
+  box-shadow: 0 0 0 1px rgba(127, 191, 255, 0.2);
+}
+
+.toolbar__load-button {
+  width: 100%;
+  height: 31px;
+  border: 0;
+  border-radius: 5px;
+  background: #f5f5f5;
+  color: #1e1e26;
+  font-size: 12px;
+  font-weight: 500;
   white-space: nowrap;
 }
 
-.toolbar__button--primary {
-  background: #111111;
-  border-color: #111111;
-  color: #ffffff;
+.toolbar__field--font {
+  gap: 4px;
 }
 
-.status {
-  position: absolute;
-  top: 58px;
-  right: 18px;
-  z-index: 90;
-  width: min(480px, calc(100vw - 36px));
+.toolbar__font-group {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0;
+  padding: 4px;
+  border-radius: 10px;
+  background: #f5f5f5;
+}
+
+.toolbar__font-option {
+  display: grid;
+  justify-items: center;
+  gap: 0;
+  min-height: 60px;
+  padding: 6px 12px;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: #1e1e26;
+}
+
+.toolbar__font-option.is-selected {
+  background: #ffffff;
+  color: #009cff;
+}
+
+.toolbar__font-sample {
+  display: block;
+  font-size: 26px;
+  line-height: 32px;
+}
+
+.toolbar__font-sample--sans,
+.toolbar__font-name--sans {
+  font-family: "Inter", "Pretendard", "Noto Sans KR", -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+.toolbar__font-sample--serif,
+.toolbar__font-name--serif {
+  font-family: "Iowan Old Style", "Times New Roman", "Noto Serif KR", serif;
+}
+
+.toolbar__font-name {
+  display: block;
   font-size: 12px;
-  color: var(--muted);
-  text-align: right;
-}
-
-.status.is-hidden {
-  opacity: 0;
-  pointer-events: none;
+  line-height: normal;
 }
 
 .deck {
@@ -151,6 +272,14 @@ button {
   inset: 0;
   overflow: hidden;
   background: #ffffff;
+}
+
+.deck--sans {
+  font-family: "Inter", "Pretendard", "Noto Sans KR", -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+.deck--serif {
+  font-family: "Iowan Old Style", "Times New Roman", "Noto Serif KR", serif;
 }
 
 .slide {
@@ -208,11 +337,17 @@ button {
   align-items: center;
   justify-content: center;
   padding: 0;
+  text-align: center;
 }
 
 .cover-slide__inner {
   width: min(100%, var(--content-width));
+  min-height: 100%;
   padding: 0 var(--content-padding);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
   text-align: center;
 }
 
@@ -232,13 +367,17 @@ button {
 
 .sticky-title {
   position: sticky;
-  top: 0;
+  top: -1px;
   z-index: 30;
   margin: 0 0 var(--title-gap);
   padding: 10px 0 16px;
   background: #ffffff;
-  box-shadow: 0 16px 0 #ffffff, 0 26px 18px -24px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 16px 0 #ffffff, 0 26px 18px -24px rgba(0, 0, 0, 0.34);
   letter-spacing: -0.045em;
+  transform: translateZ(0);
+  will-change: transform;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
 }
 
 .sticky-title--h1 {
@@ -304,7 +443,7 @@ button {
 }
 
 .rendered-rich--title {
-  padding: 8px 0 14px;
+  padding: 8px 0 4px;
 }
 
 .rendered-rich--title h1,
@@ -321,6 +460,7 @@ button {
   max-width: 100%;
   height: auto;
   border-radius: 12px;
+  cursor: zoom-in;
 }
 
 .rendered-rich table {
@@ -332,7 +472,7 @@ button {
 
 .rendered-block:has(> .rendered-rich > table),
 .rendered-rich:has(> table),
-.rendered-rich div:has(> table) {
+.rendered-rich > div:has(> table) {
   display: block !important;
   width: auto !important;
   max-width: 100% !important;
@@ -346,6 +486,13 @@ button {
   align-items: flex-start !important;
   place-self: start !important;
   align-self: flex-start !important;
+}
+
+.rendered-rich > div:has(> table)[style*="padding-right"] {
+  width: 100% !important;
+  max-width: 100% !important;
+  padding-right: 0 !important;
+  padding-left: 0 !important;
 }
 
 .rendered-rich thead,
@@ -485,6 +632,34 @@ button {
   max-width: 100%;
   height: auto;
   border-radius: 12px;
+  cursor: zoom-in;
+}
+
+.image-lightbox[hidden] {
+  display: none !important;
+}
+
+.image-lightbox {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 32px;
+  background: rgba(0, 0, 0, 0.72);
+  backdrop-filter: blur(6px);
+}
+
+.image-lightbox__image {
+  display: block;
+  max-width: min(92vw, 1600px);
+  max-height: 92vh;
+  width: auto;
+  height: auto;
+  border-radius: 18px;
+  box-shadow: 0 24px 80px rgba(0, 0, 0, 0.35);
+  cursor: auto;
 }
 
 .notion-caption {
@@ -562,25 +737,6 @@ button {
   cursor: not-allowed;
 }
 
-.source-link {
-  position: absolute;
-  right: 14px;
-  bottom: 18px;
-  z-index: 70;
-  display: inline-block;
-  max-width: min(40vw, 420px);
-  overflow: hidden;
-  color: #999999;
-  font-size: 12px;
-  white-space: nowrap;
-  text-overflow: ellipsis;
-  text-decoration: none;
-}
-
-.source-link:empty {
-  display: none;
-}
-
 @media (max-width: 1100px) {
   :root {
     --content-padding: 56px;
@@ -616,17 +772,7 @@ button {
     top: 10px;
     right: 10px;
     width: calc(100vw - 20px);
-    flex-wrap: wrap;
-  }
-
-  .toolbar__input {
-    flex-basis: 100%;
-  }
-
-  .status {
-    top: 92px;
-    right: 10px;
-    width: calc(100vw - 20px);
+    max-width: 320px;
   }
 
   .slide__scroll {
@@ -669,9 +815,4 @@ button {
     max-width: calc(100vw - 20px);
   }
 
-  .source-link {
-    right: 10px;
-    bottom: 62px;
-    max-width: calc(100vw - 20px);
-  }
 }

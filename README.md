@@ -38,6 +38,7 @@ http://localhost:3040/?url=https://www.notion.so/your-public-page&autoRefresh=tr
 - 백엔드가 Playwright로 공개 Notion 페이지를 실제 렌더링합니다.
 - DOM에서 블록 구조를 추출합니다.
 - `divider` 블록을 기준으로 슬라이드를 분리합니다.
+- `divider`를 연속 2번 쓰면 다음 구간을 표지형 마지막 슬라이드로 처리합니다.
 - 프론트엔드는 고정된 발표용 배율로 렌더링합니다.
 - 슬라이드 내용이 길면 해당 슬라이드 내부에서만 스크롤됩니다.
 - 현재 덱은 self-contained HTML로 저장할 수 있습니다.

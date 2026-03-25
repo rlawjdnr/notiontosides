@@ -67,7 +67,7 @@ npm run build
 1. GitHub 저장소를 Vercel에 연결합니다.
 2. Framework Preset은 `Other`로 둡니다.
 3. Install Command는 기본값 `npm install`을 사용합니다.
-4. Build Command는 비워두거나 `npm run build`를 사용합니다.
+4. Build Command는 `npm run build`를 사용합니다.
 5. Output Directory는 지정하지 않습니다.
 
 ### 참고

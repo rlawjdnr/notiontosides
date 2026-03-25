@@ -49,3 +49,28 @@ http://localhost:3040/?url=https://www.notion.so/your-public-page&autoRefresh=tr
 - `Home`: 표지 슬라이드
 - `R`: 현재 링크 다시 불러오기
 - `Esc`: 숨겨진 툴바 다시 표시
+
+
+## Vercel 배포
+
+이 프로젝트는 로컬에서는 `playwright`, Vercel에서는 `playwright-core` + `@sparticuz/chromium` 조합으로 동작하도록 설정되어 있습니다.
+
+### 준비
+
+```bash
+npm install
+npm run build
+```
+
+### 배포
+
+1. GitHub 저장소를 Vercel에 연결합니다.
+2. Framework Preset은 `Other`로 둡니다.
+3. Install Command는 기본값 `npm install`을 사용합니다.
+4. Build Command는 비워두거나 `npm run build`를 사용합니다.
+5. Output Directory는 지정하지 않습니다.
+
+### 참고
+
+- Notion 파싱은 서버 함수에서 Playwright를 실행하므로 첫 응답이 다소 느릴 수 있습니다.
+- Vercel 함수 제한 시간 안에서만 동작하므로, 매우 긴 Notion 페이지는 로컬 실행이 더 안정적일 수 있습니다.

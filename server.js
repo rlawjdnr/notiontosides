@@ -1,6 +1,9 @@
 const express = require("express");
 const path = require("path");
-const { chromium } = require("playwright");
+
+const isVercelRuntime = Boolean(process.env.VERCEL || process.env.AWS_REGION || process.env.VERCEL_ENV);
+const { chromium } = isVercelRuntime ? require("playwright-core") : require("playwright");
+const serverlessChromium = isVercelRuntime ? require("@sparticuz/chromium") : null;
 
 const app = express();
 const PORT = Number(process.env.PORT) || 3040;
@@ -48,12 +51,25 @@ function splitSlides(blocks) {
   return slides;
 }
 
-async function getBrowser() {
-  if (!browserPromise) {
-    browserPromise = chromium.launch({
+async function getLaunchOptions() {
+  if (!isVercelRuntime) {
+    return {
       headless: true,
       args: ["--disable-dev-shm-usage"]
-    }).then((browser) => {
+    };
+  }
+
+  return {
+    headless: serverlessChromium.headless,
+    executablePath: await serverlessChromium.executablePath(),
+    args: [...serverlessChromium.args, "--disable-dev-shm-usage"]
+  };
+}
+
+async function getBrowser() {
+  if (!browserPromise) {
+    const launchOptions = await getLaunchOptions();
+    browserPromise = chromium.launch(launchOptions).then((browser) => {
       browser.on("disconnected", () => {
         browserPromise = null;
       });
@@ -588,8 +604,6 @@ function startServer(port, attemptsLeft = 10) {
   return server;
 }
 
-const server = startServer(PORT);
-
 async function shutdown() {
   if (browserPromise) {
     const browser = await browserPromise.catch(() => null);
@@ -597,8 +611,20 @@ async function shutdown() {
       await browser.close().catch(() => {});
     }
   }
-  process.exit(0);
 }
 
-process.on("SIGINT", shutdown);
-process.on("SIGTERM", shutdown);
+if (require.main === module) {
+  startServer(PORT);
+
+  process.on("SIGINT", async () => {
+    await shutdown();
+    process.exit(0);
+  });
+
+  process.on("SIGTERM", async () => {
+    await shutdown();
+    process.exit(0);
+  });
+}
+
+module.exports = app;

@@ -1,0 +1,16 @@
+{
+  "version": 2,
+  "functions": {
+    "server.js": {
+      "runtime": "nodejs22.x",
+      "maxDuration": 60,
+      "includeFiles": "public/**"
+    }
+  },
+  "rewrites": [
+    {
+      "source": "/(.*)",
+      "destination": "/server.js"
+    }
+  ]
+}

@@ -1,0 +1,22 @@
+{
+  "name": "notion-live-presentation-downloadable",
+  "version": "1.0.0",
+  "private": true,
+  "type": "commonjs",
+  "scripts": {
+    "build": "esbuild src/app.jsx --bundle --format=iife --platform=browser --target=es2020 --outfile=public/app.js",
+    "start": "npm run build && node server.js",
+    "dev": "nodemon --watch server.js --watch src --watch public/index.html --watch public/style.css --ext js,jsx,css,html,json --exec \"npm run build && node server.js\""
+  },
+  "dependencies": {
+    "esbuild": "^0.25.10",
+    "express": "^4.21.2",
+    "framer-motion": "^12.23.24",
+    "playwright": "^1.52.0",
+    "react": "^19.1.1",
+    "react-dom": "^19.1.1"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.14"
+  }
+}
